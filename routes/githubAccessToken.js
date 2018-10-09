@@ -1,7 +1,7 @@
 const express = require('express')
 const axios = require('axios')
 let router = express.Router()
-const config = require('./config')
+const config = require('../config')
 
 
 router.get('/:user_id', function(req, res) {
