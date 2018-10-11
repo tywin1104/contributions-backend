@@ -13,12 +13,10 @@ let repoSchema = Schema({
     },
     name: {
         type: String,
-        unique: true,
         required: true
     },
     url: {
         type: String,
-        unique: true,
         required: true
     }
 })
