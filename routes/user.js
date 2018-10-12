@@ -80,18 +80,27 @@ router.post('/:user_id/favrepos', function (req, res) {
 router.post('/', function (req, res) {
     let userName = req.body.userName
     if (userName == null) {
-        res.status(400).send({ "Message": "Must provide userName" })
+        return res.status(400).send({ "Message": "Must provide userName" })
     }
-    let newUser = new User({ userName })
 
-    newUser.save(function (err) {
-        if (err) {
-            return res.status(500).send(err)
+    // Create user if not exist
+    User.findOne({ userName: userName }).exec((err, user) => {
+        if (user == null) {
+            let newUser = new User({ userName })
+
+            newUser.save(function (err) {
+                if (err) {
+                    return res.status(500).send(err)
+                } else {
+                    return res.json({
+                        'status': 'OK',
+                        'user': newUser
+                    })
+                }
+            })
+        } else {
+            return res.status(409).json({ 'Message': 'User already exists' })
         }
-        return res.json({
-            'status': 'OK',
-            'user': newUser
-        })
     })
 })
 
