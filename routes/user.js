@@ -57,9 +57,7 @@ router.post('/:user_id/favrepos', function (req, res) {
     })
 
     newFavRepo.save(function (err) {
-        if (err) {
-            return res.send(err)
-        }
+        if (err) return res.status(500).send(err);
         User.findOneAndUpdate(
             { userName: req.params.user_id },
             {
@@ -67,14 +65,43 @@ router.post('/:user_id/favrepos', function (req, res) {
             },
             { new: true },
             function (err, updatedUser) {
-                if (err) {
-                    return res.status(500).send(err);
-                }
-                return res.json(updatedUser);
+                if (err) return res.status(500).send(err);
+                return res.json({
+                    'status': 'OK',
+                    'user': updatedUser
+                });
             });
     })
 })
 
+// Delete favorite repo from a specific user and delete that repo
+router.delete('/:user_id/favrepos/:repo_name', function (req, res) {
+    Repo.findOne({ name: req.params.repo_name }, function (err, repo) {
+        if (err) return res.status(500).send(err);
+        if (repo == null) {
+            return res.status(400).json({ "Message": "Invalid repo" })
+        }
+        User.findOneAndUpdate(
+            { userName: req.params.user_id, favorite_repos: { $elemMatch: { $eq: repo._id } } },
+            {
+                $pull: { "favorite_repos": repo._id }
+            },
+            { new: true },
+            function (err, updatedUser) {
+                if (updatedUser == null) {
+                    return res.status(400).json({ "Message": "The user does not like this repo" })
+                }
+                if (err) return res.status(500).send(err)
+                repo.delete(function (err) {
+                    if (err) return res.status(500).send(err)
+                })
+                return res.json({
+                    'status': 'OK',
+                    'user': updatedUser
+                });
+            });
+    })
+})
 
 // Create a user
 router.post('/', function (req, res) {
