@@ -3,6 +3,7 @@ const axios = require('axios');
 let router = express.Router();
 const config = require('../config');
 
+// Given user github |xxx user id, return the owner's github access token to use
 router.get('/:user_id', function (req, res) {
     let user_id = req.params.user_id;
     if (user_id == null) {
