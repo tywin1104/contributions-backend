@@ -14,9 +14,12 @@ app.use(cors())
 // app.use(function (req, res, next) {
 //   res.header("Access-Control-Allow-Origin", "*")
 //   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
-//   next()
+//   next(）
 // })
 
+app.get('/', function(req, res) {
+  res.send('It is healthy!');
+})
 
 app.use('/githubUserToken', githubAccessTokenRouter)
 app.use('/users', userRouter)
